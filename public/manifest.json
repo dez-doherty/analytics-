@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "React Chrome Extension",
-  "version": "1.0.0",
-  "description": "A React dashboard injected into matching pages.",
+  "name": "Analytics+ for Aston SEATs",
+  "version": "2.0.0",
+  "description": "Adds an interactive dashboard with a heatmap and radial chart to your attendance page",
   "permissions": ["storage"],
   "content_scripts": [
     {
@@ -10,5 +10,9 @@
       "js": ["content.js"],
       "css": ["content.css"]
     }
-  ]
+  ],
+
+  "icons": {
+    "128": "icon128.png"
+  }
 }
