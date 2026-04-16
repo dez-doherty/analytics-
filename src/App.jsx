@@ -1,7 +1,6 @@
 import "gridstack/dist/gridstack.min.css";
 import "./App.css";
 import { useMemo, useState } from "react";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import GridStackWidget from "./components/grid/AddCharts";
 import {
   useAttendanceData,
@@ -17,40 +16,37 @@ function App() {
     [raw, selectedYear],
   );
 
-  const handleYearChange = (_, year) => {
-    if (year) setSelectedYear(year);
-  };
+  const activeYear = selectedYear ?? chartData.academicYears[0] ?? null;
 
   return (
-    <div className="extension-panel">
-      <div className="extension-panel__header">
-        <div>
-          <p className="extension-panel__eyebrow">SEATs Analytics+</p>
-          <h2>Interactive attendance analytics dashboard</h2>
+    <div className="mat-mdc-card mdc-card analytics-plus-panel">
+      <div className="mat-mdc-card-header">
+        <div className="mat-mdc-card-header-text">
+          <div className="mat-mdc-card-title">Analytics+</div>
+          <div className="mat-mdc-card-subtitle">
+            Interactive attendance analytics dashboard
+          </div>
         </div>
-        
-        <ToggleButtonGroup
-          value={selectedYear ?? chartData.academicYears[0] ?? null}
-          exclusive
-          onChange={handleYearChange}
-          size="small"
-          aria-label="Academic year toggle"
-        >
+        <div className="analytics-plus-year-toggle">
           {chartData.academicYears.map((year) => (
-            <ToggleButton key={year} value={year} aria-label={year}>
+            <button
+              key={year}
+              className={`mat-mdc-button mdc-button${year === activeYear ? " active" : ""}`}
+              onClick={() => setSelectedYear(year)}
+            >
               {year}
-            </ToggleButton>
+            </button>
           ))}
-        </ToggleButtonGroup>
+        </div>
       </div>
 
-      <div className="extension-panel__body mat-mdc-card-content">
+      <div className="mat-mdc-card-content analytics-plus-grid">
         <GridStackWidget
           heatmap={chartData.heatmap}
           radar={chartData.radar}
           loading={loading}
           error={error}
-          activeYear={chartData.activeYear}
+          activeYear={activeYear}
         />
       </div>
     </div>

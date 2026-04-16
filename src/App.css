@@ -1,86 +1,46 @@
-.extension-dashboard-root {
-  width: 100%;
-  display: block;
-  position: static !important;
-  min-width: 0;
+/* Inherit the site's own card styling — only add layout bits the site doesn't provide */
+
+.analytics-plus-panel {
+  margin: 16px 0;
 }
 
-.extension-panel {
-  width: 100%;
-  margin: 20px 0 16px;
-}
-
-.extension-panel__header {
+.analytics-plus-panel .mat-mdc-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 18px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.extension-panel .mat-mdc-card-content {
-  padding: 18px;
+.analytics-plus-year-toggle {
+  display: flex;
+  gap: 4px;
 }
 
-.extension-panel__eyebrow {
-  margin: 0 0 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #0f4faa;
-}
-
-.extension-panel h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.2;
-  color: #111827;
-}
-
-.extension-panel__close {
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 999px;
-  width: 32px;
-  height: 32px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.extension-panel__body {
-  padding: 18px;
-}
-
-.extension-panel__body p {
-  margin: 0 0 12px;
-  color: #374151;
-}
-
-.extension-panel__body ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.extension-panel__body li + li {
-  margin-top: 8px;
-}
-
-.extension-panel code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  font-size: 0.92em;
-  background: rgba(15, 23, 42, 0.04);
-  padding: 2px 4px;
+.analytics-plus-year-toggle button {
+  font-size: 12px;
+  padding: 4px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
 }
 
-.grid-stack-item-content {
-  width: 100%;
-  height: 100%;
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+.analytics-plus-year-toggle button.active {
+  background: var(--mdc-filled-button-container-color, #0f4faa);
+  color: #fff;
+  border-color: transparent;
+}
+
+.analytics-plus-grid {
+  margin-top: 16px;
+}
+
+.analytics-plus-grid .grid-stack-item-content {
+  background: #fff;
   border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
