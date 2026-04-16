@@ -1,0 +1,22 @@
+:root {
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1f2937;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+#crx-react-root *,
+#crx-react-root *::before,
+#crx-react-root *::after {
+  box-sizing: border-box;
+}
+
+#crx-react-root button {
+  font: inherit;
+  cursor: pointer;
+}

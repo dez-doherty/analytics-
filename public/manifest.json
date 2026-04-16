@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "React Chrome Extension",
+  "version": "1.0.0",
+  "description": "A React dashboard injected into matching pages.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://aston.seats.cloud/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ]
+}
