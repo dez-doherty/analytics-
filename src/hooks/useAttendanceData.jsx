@@ -1,8 +1,20 @@
-import { useState, useEffect } from "react";
-import getAllAttendance from "./attendance/getAllAttendance";
-import mockData from "./attendance/mockData";
+import { useState, useEffect, useCallback } from "react";
+import collectAttendance from "./attendance/getAllAttendance";
 export { getAttendanceAcademicYears } from "./attendance/dateUtils";
 export { getAttendanceChartData } from "./attendance/chartData";
+
+const CACHE_KEY = "attendance";
+
+function keyOf(entry) {
+  return `${entry.module}|${entry.date}`;
+}
+
+function merge(existing, incoming) {
+  const byKey = new Map();
+  for (const e of existing) byKey.set(keyOf(e), e);
+  for (const e of incoming) byKey.set(keyOf(e), e);
+  return [...byKey.values()];
+}
 
 export function useAttendanceData() {
   const [raw, setRaw] = useState([]);
@@ -10,34 +22,25 @@ export function useAttendanceData() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
-
-    if (import.meta.env.DEV) {
-      setRaw(mockData);
+    chrome.storage.local.get([CACHE_KEY], (items) => {
+      const cached = Array.isArray(items?.[CACHE_KEY]) ? items[CACHE_KEY] : [];
+      setRaw(cached);
       setLoading(false);
-      return;
-    }
-
-    chrome.storage.local.get(["attendance", "attendanceTime"], (items) => {
-      if (chrome.runtime.lastError || !mounted) return;
-
-      if (items.attendance && items.attendanceTime > Date.now() - 3600 * 1000) {
-        setRaw(items.attendance);
-        setLoading(false);
-        return;
-      }
-
-      getAllAttendance()
-        .then((data) => {
-          chrome.storage.local.set({ attendance: data, attendanceTime: Date.now() });
-          if (mounted) setRaw(data);
-        })
-        .catch((err) => { if (mounted) setError(err); })
-        .finally(() => { if (mounted) setLoading(false); });
     });
-
-    return () => { mounted = false; };
   }, []);
 
-  return { raw, loading, error };
+  const refresh = useCallback(() => {
+    if (import.meta.env.DEV) return;
+    setRaw((prev) => {
+      const merged = merge(prev, collectAttendance());
+      try {
+        chrome.storage.local.set({ [CACHE_KEY]: merged });
+      } catch (err) {
+        setError(err);
+      }
+      return merged;
+    });
+  }, []);
+
+  return { raw, loading, error, refresh };
 }

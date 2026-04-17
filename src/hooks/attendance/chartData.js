@@ -28,15 +28,15 @@ export function getHeatmapSeries(filtered) {
   ].sort();
 
   return Object.entries(moduleMonths)
+    .filter(([, months]) => Object.values(months).some((m) => m.attended > 0))
     .map(([name, months]) => ({
       name,
       data: allMonths.map((month) => {
         const m = months[month];
-        if (!m || m.attended === 0) return { x: getMonthLabel(month), y: null };
+        if (!m) return { x: getMonthLabel(month), y: null };
         return { x: getMonthLabel(month), y: Math.round((m.attended / m.total) * 100) };
       }),
-    }))
-    .filter((s) => s.data.some((d) => d.y !== null));
+    }));
 }
 
 export function getRadarSeries(filtered) {
@@ -52,7 +52,6 @@ export function getRadarSeries(filtered) {
     if (item.attended) moduleMonths[mod][key].attended++;
   });
 
-  // Only keep months where at least one module had attendance > 0
   const activeMonthKeys = monthKeys.filter((key) =>
     Object.values(moduleMonths).some((months) => (months[key]?.attended ?? 0) > 0),
   );
@@ -62,7 +61,6 @@ export function getRadarSeries(filtered) {
     return MONTH_NAMES[month - 1];
   });
 
-  // Only keep modules that had attendance > 0 in at least one month
   const series = Object.entries(moduleMonths)
     .filter(([, months]) => Object.values(months).some((m) => m.attended > 0))
     .map(([name, months]) => ({

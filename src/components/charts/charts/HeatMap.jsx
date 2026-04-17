@@ -26,6 +26,7 @@ export default function HeatMap({ heatmap, loading, error }) {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+  if (!heatmap || heatmap.length === 0) return <p>No attendance data yet — click Update.</p>;
 
   return (
     <Chart

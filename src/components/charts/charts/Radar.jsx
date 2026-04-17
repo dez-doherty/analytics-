@@ -21,6 +21,8 @@ export default function Radar({ radar, loading, error }) {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+  if (!radar?.series?.length || !radar?.categories?.length)
+    return <p>No attendance data yet — click Update.</p>;
 
   return (
     <Chart
