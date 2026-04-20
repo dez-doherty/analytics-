@@ -1,12 +1,16 @@
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { getAcademicYear } from "./dateUtils";
+
+dayjs.extend(customParseFormat);
 
 const CARD_SELECTOR = "mat-card.seats-hover-ct";
 
 function parseDate(label) {
-  const m = label.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+  const m = label.match(/\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}/);
   if (!m) return null;
-  const [, dd, mo, yy, hh, mi] = m;
-  return new Date(`${yy}-${mo}-${dd}T${hh}:${mi}:00`).toISOString();
+  const d = dayjs(m[0], "DD/MM/YYYY HH:mm", true);
+  return d.isValid() ? d.toISOString() : null;
 }
 
 function extractStatus(card) {

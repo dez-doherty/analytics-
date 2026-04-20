@@ -1,12 +1,6 @@
 import { useEffect, useRef } from "react";
-import ReactDOM from "react-dom/client";
-import ApexCharts from "apexcharts";
 import { GridStack } from "gridstack";
 import { getChartWidgets } from "../charts/BuildCharts";
-
-function ChartWrapper({ Component, props, chartKey }) {
-  return <Component key={chartKey} {...props} />;
-}
 
 export default function GridStackWidget({
   heatmap,
@@ -16,22 +10,16 @@ export default function GridStackWidget({
   activeYear,
 }) {
   const containerRef = useRef(null);
-  const rootsRef = useRef([]);
+  const itemRefs = useRef({});
 
-  // Initialise the grid and React roots once on mount.
+  const widgetConfigs = getChartWidgets({ heatmap, radar, loading, error });
+  const requiredColumns = Math.max(
+    1,
+    ...widgetConfigs.map((w) => w.layout.x + w.layout.w),
+  );
+
   useEffect(() => {
     if (!containerRef.current) return;
-
-    const widgetConfigs = getChartWidgets({
-      heatmap: [],
-      radar: { series: [], categories: [] },
-      loading: true,
-      error: null,
-    });
-    const requiredColumns = Math.max(
-      1,
-      ...widgetConfigs.map((w) => w.layout.x + w.layout.w),
-    );
 
     const grid = GridStack.init(
       {
@@ -47,52 +35,37 @@ export default function GridStackWidget({
       containerRef.current,
     );
 
-    rootsRef.current = widgetConfigs.map((widgetConfig) => {
-      const widget = document.createElement("div");
-      widget.className = "grid-stack-item";
-      widget.style.background = "#fff";
-      const content = document.createElement("div");
-      content.className = "grid-stack-item-content";
-      content.style.cssText = "width:100%; height:100%;";
-      widget.appendChild(content);
-      grid.makeWidget(widget, widgetConfig.layout);
-      return ReactDOM.createRoot(content);
+    widgetConfigs.forEach((w) => {
+      const el = itemRefs.current[w.id];
+      if (el) grid.makeWidget(el, w.layout);
     });
 
-    return () => {
-      grid.destroy(true);
-      rootsRef.current = [];
-    };
-  }, []);
-
-  // Re-render chart contents when data changes — no grid rebuild.
-  useEffect(() => {
-    if (rootsRef.current.length === 0) return;
-
-    const widgetConfigs = getChartWidgets({ heatmap, radar, loading, error });
-    widgetConfigs.forEach((widgetConfig, i) => {
-      rootsRef.current[i]?.render(
-        <ChartWrapper
-          Component={widgetConfig.Component}
-          props={widgetConfig.props}
-          chartKey={activeYear ?? "default"}
-        />,
-      );
-    });
-
-    if (loading) return;
-
-    const resizeTimer = window.setTimeout(() => {
-      widgetConfigs.forEach((w) => ApexCharts.exec(w.id, "resize"));
-    }, 150);
-    return () => clearTimeout(resizeTimer);
-  }, [heatmap, radar, loading, error, activeYear]);
+    return () => grid.destroy(false);
+  }, [requiredColumns]);
 
   return (
     <div
       ref={containerRef}
       className="grid-stack"
       style={{ background: "#f5f6fa" }}
-    />
+    >
+      {widgetConfigs.map(({ id, Component, props }) => (
+        <div
+          key={id}
+          ref={(el) => {
+            itemRefs.current[id] = el;
+          }}
+          className="grid-stack-item"
+          style={{ background: "#fff" }}
+        >
+          <div
+            className="grid-stack-item-content"
+            style={{ width: "100%", height: "100%" }}
+          >
+            <Component key={activeYear ?? "default"} {...props} />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

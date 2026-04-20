@@ -1,15 +1,12 @@
-import { getAttendanceAcademicYears, getISOWeekLabel } from "./dateUtils";
-
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+import dayjs from "dayjs";
+import { getAttendanceAcademicYears } from "./dateUtils";
 
 function getMonthKey(date) {
-  const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return dayjs(date).format("YYYY-MM");
 }
 
 function getMonthLabel(key) {
-  const [year, month] = key.split("-").map(Number);
-  return `${MONTH_NAMES[month - 1]} ${String(year).slice(-2)}`;
+  return dayjs(`${key}-01`).format("MMM YY");
 }
 
 export function getHeatmapSeries(filtered) {
@@ -56,10 +53,9 @@ export function getRadarSeries(filtered) {
     Object.values(moduleMonths).some((months) => (months[key]?.attended ?? 0) > 0),
   );
 
-  const activeCategories = activeMonthKeys.map((key) => {
-    const month = parseInt(key.split("-")[1], 10);
-    return MONTH_NAMES[month - 1];
-  });
+  const activeCategories = activeMonthKeys.map((key) =>
+    dayjs(`${key}-01`).format("MMM"),
+  );
 
   const series = Object.entries(moduleMonths)
     .filter(([, months]) => Object.values(months).some((m) => m.attended > 0))
