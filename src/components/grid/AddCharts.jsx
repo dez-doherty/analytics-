@@ -10,7 +10,6 @@ export default function GridStackWidget({
   activeYear,
 }) {
   const containerRef = useRef(null);
-  const itemRefs = useRef({});
 
   const widgetConfigs = getChartWidgets({ heatmap, radar, loading, error });
   const requiredColumns = Math.max(
@@ -35,11 +34,6 @@ export default function GridStackWidget({
       containerRef.current,
     );
 
-    widgetConfigs.forEach((w) => {
-      const el = itemRefs.current[w.id];
-      if (el) grid.makeWidget(el, w.layout);
-    });
-
     return () => grid.destroy(false);
   }, [requiredColumns]);
 
@@ -49,13 +43,14 @@ export default function GridStackWidget({
       className="grid-stack"
       style={{ background: "#f5f6fa" }}
     >
-      {widgetConfigs.map(({ id, Component, props }) => (
+      {widgetConfigs.map(({ id, Component, props, layout }) => (
         <div
           key={id}
-          ref={(el) => {
-            itemRefs.current[id] = el;
-          }}
           className="grid-stack-item"
+          gs-x={layout.x}
+          gs-y={layout.y}
+          gs-w={layout.w}
+          gs-h={layout.h}
           style={{ background: "#fff" }}
         >
           <div
