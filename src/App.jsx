@@ -50,6 +50,8 @@ function App() {
         <GridStackWidget
           heatmap={chartData.heatmap}
           radar={chartData.radar}
+          column={chartData.column}
+          slope={chartData.slope}
           loading={loading}
           error={error}
           activeYear={activeYear}

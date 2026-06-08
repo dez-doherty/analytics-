@@ -5,13 +5,22 @@ import { getChartWidgets } from "../charts/BuildCharts";
 export default function GridStackWidget({
   heatmap,
   radar,
+  column,
+  slope,
   loading,
   error,
   activeYear,
 }) {
   const containerRef = useRef(null);
 
-  const widgetConfigs = getChartWidgets({ heatmap, radar, loading, error });
+  const widgetConfigs = getChartWidgets({
+    heatmap,
+    radar,
+    column,
+    slope,
+    loading,
+    error,
+  });
   const requiredColumns = Math.max(
     1,
     ...widgetConfigs.map((w) => w.layout.x + w.layout.w),
@@ -29,6 +38,7 @@ export default function GridStackWidget({
         float: false,
         disableResize: true,
         animate: false,
+        draggable: { handle: ".grid-stack-item-content", scroll: false },
         column: requiredColumns,
       },
       containerRef.current,
