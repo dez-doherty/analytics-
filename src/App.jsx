@@ -8,7 +8,7 @@ import {
 } from "./hooks/useAttendanceData";
 
 function App() {
-  const { raw, loading, error, refresh } = useAttendanceData();
+  const { raw, loading, error, refresh, lastUpdated } = useAttendanceData();
   const [selectedYear, setSelectedYear] = useState(null);
 
   const chartData = useMemo(
@@ -37,12 +37,12 @@ function App() {
               {year}
             </button>
           ))}
-          <button
-            className="mat-mdc-button mdc-button analytics-plus-update"
-            onClick={refresh}
-          >
-            Update
-          </button>
+          {/* Update button removed: data is fetched on mount and via background refresh */}
+          {lastUpdated ? (
+            <div className="analytics-plus-updated">
+              Last updated: {new Date(lastUpdated).toLocaleString()}
+            </div>
+          ) : null}
         </div>
       </div>
 

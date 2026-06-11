@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Analytics+",
-  "version": "3.0.0",
-  "description": "Adds an interactive dashboard with a heatmap and radial chart to your attendance page",
+  "version": "4.0",
+  "description": "Adds an interactive dashboard with a heatmap, column chart, line chart and radial chart to your attendance page",
   "permissions": ["storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["https://aston.seats.cloud/*"],
