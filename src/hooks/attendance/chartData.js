@@ -9,6 +9,16 @@ function getMonthLabel(key) {
   return dayjs(`${key}-01`).format("MMM YY");
 }
 
+// Convert module name to abbreviation using capital letters
+// e.g., "Data-Structures" -> "DS", "Web-Development" -> "WD"
+function abbreviateModuleName(name) {
+  if (!name || name === "Unknown") return name;
+  return name
+    .split(/[-\s_]+/)
+    .map((word) => word[0]?.toUpperCase() || "")
+    .join("");
+}
+
 export function getHeatmapSeries(filtered) {
   const moduleMonths = {};
   filtered.forEach((item) => {
@@ -30,7 +40,7 @@ export function getHeatmapSeries(filtered) {
   return Object.entries(moduleMonths)
     .filter(([, months]) => Object.values(months).some((m) => m.attended > 0))
     .map(([name, months]) => ({
-      name,
+      name: abbreviateModuleName(name),
       data: allMonths.map((month) => {
         const m = months[month];
         if (!m) return { x: getMonthLabel(month), y: null };
@@ -71,7 +81,7 @@ export function getRadarSeries(filtered) {
   const series = Object.entries(moduleMonths)
     .filter(([, months]) => Object.values(months).some((m) => m.attended > 0))
     .map(([name, months]) => ({
-      name,
+      name: abbreviateModuleName(name),
       data: activeMonthKeys.map((key) => {
         const m = months[key];
         return m ? Math.round((m.attended / m.total) * 100) : 0;
@@ -117,9 +127,15 @@ export function getColumnSeries(filtered) {
     .filter((m) =>
       Object.values(moduleMonths[m]).some((mm) => (mm.attended ?? 0) > 0),
     )
-    .sort();
+    .sort()
+    .map(abbreviateModuleName);
 
-  const data = modules.map((m) => {
+  const data = Object.keys(moduleMonths)
+    .filter((m) =>
+      Object.values(moduleMonths[m]).some((mm) => (mm.attended ?? 0) > 0),
+    )
+    .sort()
+    .map((m) => {
     const months = moduleMonths[m];
     const totals = Object.values(months || {}).reduce(
       (acc, v) => {

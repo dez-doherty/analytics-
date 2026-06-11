@@ -11,7 +11,12 @@ export default function HeatMap({ heatmap, loading, error }) {
       xaxis: {
         labels: {
           rotate: -45,
-          style: { fontSize: "10px" },
+          style: { fontSize: "10px", fontFamily: "Arial, sans-serif" },
+        },
+      },
+      yaxis: {
+        labels: {
+          style: { fontSize: "10px", fontFamily: "Arial, sans-serif" },
         },
       },
       plotOptions: {

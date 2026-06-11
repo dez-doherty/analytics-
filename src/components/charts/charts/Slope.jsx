@@ -10,7 +10,7 @@ export default function Slope({ slope, loading, error }) {
       markers: { size: 4 },
       xaxis: {
         categories: slope.categories,
-        labels: { rotate: -45, style: { fontSize: "10px" } },
+        labels: { rotate: -45, style: { fontSize: "10px", fontFamily: "Arial, sans-serif" } },
       },
       yaxis: { min: 0, max: 100, title: { text: "%" } },
     }),

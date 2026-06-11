@@ -14,7 +14,7 @@ export default function Radar({ radar, loading, error }) {
       fill: { opacity: 0.1 },
       markers: { size: 0 },
       yaxis: { stepSize: 20, min: 0, max: 100 },
-      xaxis: { categories: radar.categories },
+      xaxis: { categories: radar.categories, labels: { style: { fontFamily: "Arial, sans-serif" } } },
     }),
     [radar.categories],
   );

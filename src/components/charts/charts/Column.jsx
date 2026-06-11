@@ -8,7 +8,7 @@ export default function Column({ column, loading, error }) {
       title: { text: "Average Attendance by Module", align: "left" },
       xaxis: {
         categories: column.categories,
-        labels: { rotate: -45, style: { fontSize: "10px" } },
+        labels: { rotate: -45, style: { fontSize: "10px", fontFamily: "Arial, sans-serif" } },
       },
       yaxis: { min: 0, max: 100, title: { text: "%" } },
       plotOptions: { bar: { horizontal: false, columnWidth: "60%" } },
