@@ -9,14 +9,12 @@ function getMonthLabel(key) {
   return dayjs(`${key}-01`).format("MMM YY");
 }
 
-// Convert module name to abbreviation using capital letters
-// e.g., "Data-Structures" -> "DS", "Web-Development" -> "WD"
 function abbreviateModuleName(name) {
   if (!name || name === "Unknown") return name;
-  return name
-    .split(/[-\s_]+/)
-    .map((word) => word[0]?.toUpperCase() || "")
-    .join("");
+  const parts = name.split(/[-\s_]+/);
+  const caps = parts.filter((w) => /^[A-Z]/.test(w));
+  if (caps.length > 0) return caps.map((w) => w[0].toUpperCase()).join("");
+  return parts.map((word) => word[0]?.toUpperCase() || "").join("");
 }
 
 export function getHeatmapSeries(filtered) {
@@ -52,43 +50,26 @@ export function getHeatmapSeries(filtered) {
     }));
 }
 
-export function getRadarSeries(filtered) {
-  const monthKeys = [
-    ...new Set(filtered.map((item) => getMonthKey(item.date))),
-  ].sort();
+// Radar chart removed for production; treemap used instead.
 
-  const moduleMonths = {};
-  filtered.forEach((item) => {
-    const mod = item.module ?? "Unknown";
-    const key = getMonthKey(item.date);
-    if (!moduleMonths[mod]) moduleMonths[mod] = {};
-    if (!moduleMonths[mod][key])
-      moduleMonths[mod][key] = { attended: 0, total: 0 };
-    moduleMonths[mod][key].total++;
-    if (item.attended) moduleMonths[mod][key].attended++;
+export function getTreemapSeries(filtered) {
+  // Summarise attendance % per module over filtered range
+  const moduleAgg = {};
+  filtered.forEach((it) => {
+    const mod = it.module ?? "Unknown";
+    if (!moduleAgg[mod]) moduleAgg[mod] = { attended: 0, total: 0 };
+    moduleAgg[mod].attended += it.attended ? 1 : 0;
+    moduleAgg[mod].total += 1;
   });
 
-  const activeMonthKeys = monthKeys.filter((key) =>
-    Object.values(moduleMonths).some(
-      (months) => (months[key]?.attended ?? 0) > 0,
-    ),
-  );
+  const data = Object.entries(moduleAgg)
+    .map(([name, v]) => {
+      const pct = v.total > 0 ? Math.round((v.attended / v.total) * 100) : 0;
+      return { x: abbreviateModuleName(name), y: pct, label: name };
+    })
+    .sort((a, b) => b.y - a.y);
 
-  const activeCategories = activeMonthKeys.map((key) =>
-    dayjs(`${key}-01`).format("MMM"),
-  );
-
-  const series = Object.entries(moduleMonths)
-    .filter(([, months]) => Object.values(months).some((m) => m.attended > 0))
-    .map(([name, months]) => ({
-      name: abbreviateModuleName(name),
-      data: activeMonthKeys.map((key) => {
-        const m = months[key];
-        return m ? Math.round((m.attended / m.total) * 100) : 0;
-      }),
-    }));
-
-  return { series, categories: activeCategories };
+  return { series: [{ data }] };
 }
 
 export function getAttendanceChartData(raw, selectedAcademicYear) {
@@ -103,15 +84,13 @@ export function getAttendanceChartData(raw, selectedAcademicYear) {
     academicYears,
     activeYear,
     heatmap: getHeatmapSeries(filtered),
-    radar: getRadarSeries(filtered),
+    treemap: getTreemapSeries(filtered),
     column: getColumnSeries(filtered),
     slope: getSlopeSeries(raw, activeYear, academicYears),
   };
 }
 
 export function getColumnSeries(filtered) {
-  // Build module->month aggregates (same approach as radar) so we only show
-  // core modules that have attendance records.
   const moduleMonths = {};
   filtered.forEach((item) => {
     const mod = item.module ?? "Unknown";
@@ -136,25 +115,24 @@ export function getColumnSeries(filtered) {
     )
     .sort()
     .map((m) => {
-    const months = moduleMonths[m];
-    const totals = Object.values(months || {}).reduce(
-      (acc, v) => {
-        acc.attended += v.attended ?? 0;
-        acc.total += v.total ?? 0;
-        return acc;
-      },
-      { attended: 0, total: 0 },
-    );
-    return totals.total > 0
-      ? Math.round((totals.attended / totals.total) * 100)
-      : 0;
-  });
+      const months = moduleMonths[m];
+      const totals = Object.values(months || {}).reduce(
+        (acc, v) => {
+          acc.attended += v.attended ?? 0;
+          acc.total += v.total ?? 0;
+          return acc;
+        },
+        { attended: 0, total: 0 },
+      );
+      return totals.total > 0
+        ? Math.round((totals.attended / totals.total) * 100)
+        : 0;
+    });
 
   return { categories: modules, series: [{ name: "Attendance %", data }] };
 }
 
 export function getSlopeSeries(raw, activeYear, academicYears) {
-  // Build fixed academic-year month order: Sep -> Jun (exclude Jul/Aug)
   const monthOrder = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
   const categories = monthOrder.map((m) =>
     dayjs()

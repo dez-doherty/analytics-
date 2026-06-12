@@ -4,7 +4,7 @@ import { getChartWidgets } from "../charts/BuildCharts";
 
 export default function GridStackWidget({
   heatmap,
-  radar,
+  treemap,
   column,
   slope,
   loading,
@@ -15,7 +15,7 @@ export default function GridStackWidget({
 
   const widgetConfigs = getChartWidgets({
     heatmap,
-    radar,
+    treemap,
     column,
     slope,
     loading,
@@ -26,25 +26,56 @@ export default function GridStackWidget({
     ...widgetConfigs.map((w) => w.layout.x + w.layout.w),
   );
 
+  const requiredRows = Math.max(
+    1,
+    ...widgetConfigs.map((w) => w.layout.y + w.layout.h),
+  );
+
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const grid = GridStack.init(
-      {
-        autoCellHeight: false,
-        cellHeight: 90,
-        margin: 10,
-        disableOneColumnMode: true,
-        float: false,
-        disableResize: true,
-        animate: false,
-        draggable: { handle: ".grid-stack-item-content", scroll: false },
-        column: requiredColumns,
-      },
-      containerRef.current,
-    );
+    let grid;
 
-    return () => grid.destroy(false);
+    function initGrid() {
+      // available vertical space below the grid container
+      const top = containerRef.current.getBoundingClientRect().top;
+      const availableHeight = Math.max(240, window.innerHeight - top - 120);
+      // compute cell height so the grid fits into availableHeight
+      // leave a small buffer so chart legends and margins don't trigger scrollbars
+      const computedCellHeight = Math.max(
+        60,
+        Math.floor(availableHeight / requiredRows) - 8,
+      );
+
+      return GridStack.init(
+        {
+          autoCellHeight: false,
+          cellHeight: computedCellHeight,
+          margin: 10,
+          disableOneColumnMode: true,
+          float: false,
+          disableResize: true,
+          animate: false,
+          draggable: { handle: ".grid-stack-item-content", scroll: false },
+          column: requiredColumns,
+        },
+        containerRef.current,
+      );
+    }
+
+    grid = initGrid();
+
+    function handleResize() {
+      if (grid) grid.destroy(false);
+      grid = initGrid();
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (grid) grid.destroy(false);
+    };
   }, [requiredColumns]);
 
   return (

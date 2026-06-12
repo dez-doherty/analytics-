@@ -2,6 +2,11 @@
 
 .analytics-plus-panel {
   margin: 16px 0;
+  padding: 18px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #eef0f2;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .analytics-plus-panel .mat-mdc-card-header {
@@ -15,6 +20,14 @@
 .analytics-plus-year-toggle {
   display: flex;
   gap: 4px;
+  margin: 0 auto;
+}
+
+.analytics-plus-updated {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin-left: 12px;
+  white-space: nowrap;
 }
 
 .analytics-plus-year-toggle button {
@@ -36,11 +49,34 @@
 
 .analytics-plus-grid {
   margin-top: 16px;
+  padding: 12px;
 }
 
 .analytics-plus-grid .grid-stack-item-content {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.mat-mdc-card-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.mat-mdc-card-subtitle {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Ensure apexcharts internal containers don't create scrollbars inside widgets */
+.analytics-plus-grid .grid-stack-item-content .apexcharts-canvas,
+.analytics-plus-grid .grid-stack-item-content .apexcharts-inner,
+.analytics-plus-grid .grid-stack-item-content svg {
+  overflow: visible !important;
+}
+
+/* Constrain grid so page doesn't scroll; allow internal scrolling only if necessary */
+.analytics-plus-grid .grid-stack {
   overflow: hidden;
 }

@@ -38,18 +38,18 @@ function App() {
             </button>
           ))}
           {/* Update button removed: data is fetched on mount and via background refresh */}
-          {lastUpdated ? (
-            <div className="analytics-plus-updated">
-              Last updated: {new Date(lastUpdated).toLocaleString()}
-            </div>
-          ) : null}
         </div>
+        {lastUpdated ? (
+          <div className="analytics-plus-updated">
+            Last updated: {new Date(lastUpdated).toLocaleString()}
+          </div>
+        ) : null}
       </div>
 
       <div className="mat-mdc-card-content analytics-plus-grid">
         <GridStackWidget
           heatmap={chartData.heatmap}
-          radar={chartData.radar}
+          treemap={chartData.treemap}
           column={chartData.column}
           slope={chartData.slope}
           loading={loading}

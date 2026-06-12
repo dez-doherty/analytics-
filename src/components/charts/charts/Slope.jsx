@@ -5,12 +5,14 @@ export default function Slope({ slope, loading, error }) {
   const options = useMemo(
     () => ({
       chart: { id: "attendance-slope", type: "line", toolbar: { show: false } },
-      title: { text: "Year-on-Year Attendance (Slope)", align: "left" },
       stroke: { width: 3, curve: "straight" },
       markers: { size: 4 },
       xaxis: {
         categories: slope.categories,
-        labels: { rotate: -45, style: { fontSize: "10px", fontFamily: "Arial, sans-serif" } },
+        labels: {
+          rotate: -45,
+          style: { fontSize: "10px", fontFamily: "Arial, sans-serif" },
+        },
       },
       yaxis: { min: 0, max: 100, title: { text: "%" } },
     }),

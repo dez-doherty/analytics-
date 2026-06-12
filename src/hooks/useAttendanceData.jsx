@@ -24,26 +24,37 @@ export function useAttendanceData() {
 
   useEffect(() => {
     let mounted = true;
-    chrome.storage.local.get([CACHE_KEY, "attendanceTime"], (items) => {
+
+    if (
+      typeof chrome === "undefined" ||
+      !chrome.storage ||
+      !chrome.storage.local
+    ) {
+      setError(
+        new Error(
+          "chrome.storage.local is not available. Run the app as an extension.",
+        ),
+      );
+      setLoading(false);
+      return () => {
+        mounted = false;
+      };
+    }
+
+    const storage = chrome.storage.local;
+
+    storage.get([CACHE_KEY, "attendanceTime"], (items) => {
       const cached = Array.isArray(items?.[CACHE_KEY]) ? items[CACHE_KEY] : [];
       setRaw(cached);
       setLoading(false);
       if (items?.attendanceTime) setLastUpdated(items.attendanceTime);
     });
 
-    if (import.meta.env.DEV)
-      return () => {
-        mounted = false;
-      };
-
     getAllAttendance()
       .then((data) => {
         if (!mounted) return;
         try {
-          chrome.storage.local.set({
-            [CACHE_KEY]: data,
-            attendanceTime: Date.now(),
-          });
+          storage.set({ [CACHE_KEY]: data, attendanceTime: Date.now() });
         } catch (err) {
           /* ignore */
         }
@@ -59,15 +70,19 @@ export function useAttendanceData() {
       mounted = false;
     };
   }, []);
+
   const refresh = useCallback(async () => {
-    if (import.meta.env.DEV) return;
     try {
       const data = await getAllAttendance();
       const merged = merge(raw, data);
-      chrome.storage.local.set({
-        [CACHE_KEY]: merged,
-        attendanceTime: Date.now(),
-      });
+      try {
+        chrome.storage.local.set({
+          [CACHE_KEY]: merged,
+          attendanceTime: Date.now(),
+        });
+      } catch (e) {
+        // ignore
+      }
       setRaw(merged);
       setLastUpdated(Date.now());
       return merged;
@@ -79,7 +94,6 @@ export function useAttendanceData() {
 
   // Auto-refresh hourly
   useEffect(() => {
-    if (import.meta.env.DEV) return;
     const id = setInterval(
       () => {
         refresh().catch(() => {});
