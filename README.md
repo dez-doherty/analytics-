@@ -1,4 +1,9 @@
 # Analytics+ (Attendance Dashboard)
+[Link to extension](https://chromewebstore.google.com/detail/analytics+/nnnnahkcahiaamafolocflhjcedhnbie?hl=en-GB&authuser=0)
+
+
+
+<img width="2880" height="1288" alt="Image" src="https://github.com/user-attachments/assets/ad951268-c215-4492-89d8-4fbe3a71bc29" />
 
 ## Description
 
@@ -22,4 +27,3 @@ A Chrome extension that injects an interactive analytics dashboard into the Asto
 - `Drag-and-drop dashboard grid to add and rearrange charts`
 - `Styled to match the host attendance page`
 
-<img width="2880" height="1288" alt="Image" src="https://github.com/user-attachments/assets/ad951268-c215-4492-89d8-4fbe3a71bc29" />
